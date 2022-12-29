@@ -57,6 +57,12 @@ def main(win, width):
 					end = None
 
 			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_u:
+					for row in grid:
+						for spot in row:
+							spot.update_neighbors(grid)
+					Astar.update_safe(lambda: Grid.draw(win, grid, ROWS, width), grid)
+
 				if event.key == pygame.K_SPACE and start and end:
 					for row in grid:
 						for spot in row:
@@ -64,6 +70,14 @@ def main(win, width):
 							if spot != start and spot != end and not spot.is_barrier():
 								spot.reset()
 
+					Astar.algorithm_safe(lambda: Grid.draw(win, grid, ROWS, width), grid, start, end)
+
+				if event.key == pygame.K_a and start and end:
+					for row in grid:
+						for spot in row:
+							spot.update_neighbors(grid)
+							if spot != start and spot != end and not spot.is_barrier():
+								spot.reset()
 					Astar.algorithm(lambda: Grid.draw(win, grid, ROWS, width), grid, start, end)
 
 				if event.key == pygame.K_c:

@@ -7,7 +7,7 @@ def make_grid(rows, width):
 	for i in range(rows):
 		grid.append([])
 		for j in range(rows):
-			spot = Spot(i, j, gap, rows)
+			spot = Spot(i, j, gap, rows, float("inf"))
 			grid[i].append(spot)
 
 	return grid

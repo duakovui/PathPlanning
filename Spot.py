@@ -12,7 +12,7 @@ GREY = (128, 128, 128)
 TURQUOISE = (64, 224, 208)
 
 class Spot:
-	def __init__(self, row, col, width, total_rows):
+	def __init__(self, row, col, width, total_rows, safe):
 		self.row = row
 		self.col = col
 		self.x = row * width
@@ -21,6 +21,7 @@ class Spot:
 		self.neighbors = []
 		self.width = width
 		self.total_rows = total_rows
+		self.safe = safe
 
 	def get_pos(self):
 		return self.row, self.col
@@ -77,7 +78,6 @@ class Spot:
 
 		if self.col > 0 and not grid[self.row][self.col - 1].is_barrier(): # LEFT
 			self.neighbors.append(grid[self.row][self.col - 1])
-
 
 	def __lt__(self, other):
 		return False
