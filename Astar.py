@@ -87,7 +87,7 @@ def reconstruct_path(draw, came_from, current):
 		current.make_path()
 		draw()
 
-def algorithm_safe(draw, grid, start, end):
+def algorithm_safe(draw, grid, start, end, anpha, beta, ganma):
 	open_set = PriorityQueue()
 	open_set.put((0, start.safe, start))
 	came_from = {}
@@ -116,11 +116,10 @@ def algorithm_safe(draw, grid, start, end):
 
 		for neighbor in current.neighbors:
 			temp_g_score = g_score[current] + 1
-
 			if g_score[neighbor] > temp_g_score:
 				came_from[neighbor] = current
 				g_score[neighbor] = temp_g_score
-				f_score[neighbor] = g_score[neighbor] + h(neighbor.get_pos(), end.get_pos()) + neighbor.safe
+				f_score[neighbor] = anpha*g_score[neighbor] + beta*h(neighbor.get_pos(), end.get_pos()) + ganma*neighbor.safe
 				if neighbor not in open_set_hash:
 					open_set.put((f_score[neighbor], neighbor.safe, neighbor))
 					open_set_hash.add(neighbor)
@@ -135,7 +134,7 @@ def algorithm_safe(draw, grid, start, end):
 
 	return False
 
-def algorithm(draw, grid, start, end):
+def algorithm(draw, grid, start, end, anpha, beta):
 	open_set = PriorityQueue()
 	count = 0
 	open_set.put((0, count, start))
@@ -162,18 +161,16 @@ def algorithm(draw, grid, start, end):
 
 		for neighbor in current.neighbors:
 			temp_g_score = g_score[current] + 1
-
 			if g_score[neighbor] > temp_g_score:
 				came_from[neighbor] = current
 				g_score[neighbor] = temp_g_score
-				f_score[neighbor] = g_score[neighbor] + h(neighbor.get_pos(), end.get_pos())
+				f_score[neighbor] = anpha*g_score[neighbor] + beta*h(neighbor.get_pos(), end.get_pos())
 				if neighbor not in open_set_hash:
 					count += 1
 					open_set.put((f_score[neighbor], count, neighbor))
 					open_set_hash.add(neighbor)
 					neighbor.make_open()
 		draw()
-
 		if current != start:
 			current.make_closed()
 

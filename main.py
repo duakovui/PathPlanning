@@ -11,15 +11,12 @@ pygame.display.set_caption("A* Path Finding Algorithm")
 
 def fileCount(folder):
     "count the number of files in a directory"
-
     count = 0
-
     for filename in os.listdir(folder):
         path = os.path.join(folder, filename)
 
         if os.path.isfile(path):
             count += 1
-
     return count
 
 def get_clicked_pos(pos, rows, width):
@@ -39,6 +36,9 @@ def main(win, width):
 
 	start = None
 	end = None
+	g_c = 1
+	h_c = 1
+	s_c = 0.5
 
 	run = True
 	while run:
@@ -87,12 +87,14 @@ def main(win, width):
 					f.close()
 
 				if event.key == pygame.K_LEFT:
+					start = None
+					end = None
 					if current_map > 1:
 						current_map -= 1
 					else: current_map = number_of_maps
 					f = open("map\map"+str(current_map)+".txt", "r")
 					data = f.readlines()
-					reset_grid(grid)
+					Grid.reset_grid(grid)
 					for i in range(ROWS):
 						for j in range(ROWS):
 							spot = grid[i][j]
@@ -102,12 +104,14 @@ def main(win, width):
 					Grid.draw(win, grid, ROWS, width)
 
 				if event.key == pygame.K_RIGHT:
+					start = None
+					end = None
 					if current_map < number_of_maps:
 						current_map += 1
 					else: current_map = 1
 					f = open("map\map"+str(current_map)+".txt", "r")
 					data = f.readlines()
-					reset_grid(grid)
+					Grid.reset_grid(grid)
 					for i in range(ROWS):
 						for j in range(ROWS):
 							spot = grid[i][j]
@@ -115,6 +119,14 @@ def main(win, width):
 								spot.make_barrier()
 					f.close()
 					Grid.draw(win, grid, ROWS, width)
+
+				if event.key == pygame.K_i:
+					print("G_score: ")
+					g_c = float(input())
+					print("H_score: ")
+					h_c = float(input())
+					print("Safety: ")
+					s_c = float(input())
 
 				if event.key == pygame.K_u:
 					for row in grid:
@@ -129,7 +141,7 @@ def main(win, width):
 							if spot != start and spot != end and not spot.is_barrier():
 								spot.reset()
 
-					Astar.algorithm_safe(lambda: Grid.draw(win, grid, ROWS, width), grid, start, end)
+					Astar.algorithm_safe(lambda: Grid.draw(win, grid, ROWS, width), grid, start, end, g_c, h_c, s_c)
 
 				if event.key == pygame.K_a and start and end:
 					for row in grid:
@@ -137,7 +149,7 @@ def main(win, width):
 							spot.update_neighbors(grid)
 							if spot != start and spot != end and not spot.is_barrier():
 								spot.reset()
-					Astar.algorithm(lambda: Grid.draw(win, grid, ROWS, width), grid, start, end)
+					Astar.algorithm(lambda: Grid.draw(win, grid, ROWS, width), grid, start, end, g_c, h_c)
 
 				if event.key == pygame.K_c:
 					start = None

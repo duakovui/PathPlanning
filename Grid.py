@@ -16,6 +16,7 @@ def reset_grid(grid):
 	for row in grid:
 		for spot in row:
 			spot.reset()
+			spot.safe = float("inf")
 
 def draw_grid(win, rows, width):
 	gap = width // rows
