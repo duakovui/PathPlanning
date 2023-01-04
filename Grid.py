@@ -12,6 +12,10 @@ def make_grid(rows, width):
 
 	return grid
 
+def reset_grid(grid):
+	for row in grid:
+		for spot in row:
+			spot.reset()
 
 def draw_grid(win, rows, width):
 	gap = width // rows

@@ -40,6 +40,10 @@ class Spot:
 
 	def is_end(self):
 		return self.color == TURQUOISE
+	def is_checked(self):
+		return self.color == YELLOW
+	def check(self):
+		self.color = YELLOW
 
 	def reset(self):
 		self.color = WHITE
