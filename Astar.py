@@ -11,62 +11,34 @@ def h(p1, p2):
 
 def update_safe(draw, grid):
 	max_safety = 0
-	for row in grid:
-		for spot in row:
-			if spot.is_barrier():
-				for neighbor in spot.neighbors:
-					neighbor.safe = 0
-					if not neighbor.is_start() and not neighbor.is_end():
-						neighbor.check()
-			else:
-				if spot.row > 0 and spot.col > 0 and grid[spot.row - 1][spot.col - 1].is_barrier():
-					spot.safe = 0.5
-					if not spot.is_start() and not spot.is_end():
-						spot.check()
-				if spot.row > 0 and spot.col < spot.total_rows - 1 and grid[spot.row - 1][
-					spot.col + 1].is_barrier():
-					spot.safe = 0.5
-					if not spot.is_start() and not spot.is_end():
-						spot.check()
-				if spot.row < spot.total_rows - 1 and spot.col > 0 and grid[spot.row + 1][
-					spot.col - 1].is_barrier():
-					spot.safe = 0.5
-					if not spot.is_start() and not spot.is_end():
-						spot.check()
-				if spot.row < spot.total_rows - 1 and spot.col < spot.total_rows - 1:
-					if grid[spot.row + 1][spot.col + 1].is_barrier():
-						spot.safe = 0.5
-						if not spot.is_start() and not spot.is_end():
-							spot.check()
-		draw()
 	count = 1
-	while count > 0:
-		count = 0
-		for row in grid:
-			for spot in row:
-				if not spot.is_barrier():
-					for neighbor in spot.neighbors:
-						if spot.safe > (neighbor.safe + 1):
-							spot.safe = neighbor.safe + 1
-							if max_safety < spot.safe:
-								max_safety = spot.safe
-							count += 1
-							if not spot.is_start() and not spot.is_end():
-								spot.check()
-			draw()
-		for i in range(50):
-			for j in range(50):
-				spot = grid[49 - i][49 - j]
-				if not spot.is_barrier():
-					for neighbor in spot.neighbors:
-						if spot.safe > (neighbor.safe + 1):
-							spot.safe = neighbor.safe + 1
-							if max_safety < spot.safe:
-								max_safety = spot.safe
-							count += 1
-							if not spot.is_start() and not spot.is_end():
-								spot.make_closed()
-			draw()
+	open_set = PriorityQueue()
+	for rows in grid:
+		for spot in rows:
+			if spot.is_barrier():
+				spot.safe = 0
+				open_set.put((0, count, spot))
+				count += 1
+
+	while not open_set.empty():
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+
+		current = open_set.get()[2]
+		for neighbor in current.neighbors1:
+			if not neighbor.is_open():
+				if not neighbor.is_closed():
+					neighbor.safe = current.safe + 1
+					if max_safety < neighbor.safe:
+						max_safety = neighbor.safe
+					open_set.put((neighbor.safe, count, neighbor))
+					count += 1
+					neighbor.make_open()
+		draw()
+		if not current.is_barrier():
+			current.make_closed()
+
 	for row in grid:
 		for spot in row:
 			spot.safe = max_safety - spot.safe
@@ -121,12 +93,13 @@ def algorithm_safe(draw, grid, start, end, anpha, beta, ganma):
 				g_score[neighbor] = temp_g_score
 				f_score[neighbor] = anpha*g_score[neighbor] + beta*h(neighbor.get_pos(), end.get_pos()) + ganma*neighbor.safe
 				if neighbor not in open_set_hash:
-					open_set.put((f_score[neighbor], neighbor.safe, neighbor))
-					open_set_hash.add(neighbor)
-					neighbor.make_open()
-					path_safety[neighbor] = path_safety[current] + neighbor.safe
-					if neighbor not in approved_set:
-						approved_set.add(neighbor)
+					if not neighbor.is_closed():
+						open_set.put((f_score[neighbor], neighbor.safe, neighbor))
+						open_set_hash.add(neighbor)
+						neighbor.make_open()
+						path_safety[neighbor] = path_safety[current] + neighbor.safe
+						if neighbor not in approved_set:
+							approved_set.add(neighbor)
 		draw()
 
 		if current != start:
