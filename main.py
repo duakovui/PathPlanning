@@ -14,7 +14,6 @@ def fileCount(folder):
     count = 0
     for filename in os.listdir(folder):
         path = os.path.join(folder, filename)
-
         if os.path.isfile(path):
             count += 1
     return count
@@ -91,7 +90,8 @@ def main(win, width):
 					end = None
 					if current_map > 1:
 						current_map -= 1
-					else: current_map = number_of_maps
+					else:
+						current_map = number_of_maps
 					f = open("map\map"+str(current_map)+".txt", "r")
 					data = f.readlines()
 					Grid.reset_grid(grid)
@@ -108,7 +108,8 @@ def main(win, width):
 					end = None
 					if current_map < number_of_maps:
 						current_map += 1
-					else: current_map = 1
+					else:
+						current_map = 1
 					f = open("map\map"+str(current_map)+".txt", "r")
 					data = f.readlines()
 					Grid.reset_grid(grid)
